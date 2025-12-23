@@ -4,9 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@coinbase/x402": "^2.0.0",
@@ -26,6 +31,7 @@
     "dotenv": "^17.2.3",
     "eslint": "8.55.0",
     "eslint-config-next": "14.1.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

@@ -13,16 +13,20 @@
   --shadow: 0 12px 32px rgba(42, 24, 16, 0.08);
   --radius: 16px;
   --gradient: radial-gradient(
-      circle at 20% 25%,
-      rgba(255, 235, 215, 0.35),
+      circle at 22% 28%,
+      rgba(255, 230, 210, 0.3),
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 76% 18%,
+      rgba(212, 102, 90, 0.15),
       transparent 45%
     ),
     radial-gradient(
-      circle at 78% 15%,
-      rgba(212, 102, 90, 0.18),
-      transparent 40%
+      circle at 50% 80%,
+      rgba(220, 180, 150, 0.12),
+      transparent 55%
     ),
-    radial-gradient(circle at 55% 75%, rgba(61, 90, 124, 0.14), transparent 50%),
     linear-gradient(135deg, #fffcf8 0%, #fdf8f0 60%, #faf3e8 100%);
   font-family: "Space Grotesk", "Inter", system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -54,19 +58,52 @@ a {
 .page-bg {
   position: fixed;
   inset: 0;
-  background: var(--gradient),
+
+  /* Paper texture image */
+  background: url("/paper.jpg");
+  background-size: cover;
+  background-position: center;
+  z-index: -3;
+
+  /* Option 2: Enhanced CSS paper texture (commented out when using image) */
+  /* background: repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      rgba(180, 150, 120, 0.02) 1px,
+      transparent 1.5px,
+      transparent 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(190, 160, 130, 0.02) 1px,
+      transparent 1.5px,
+      transparent 2.5px
+    ),
+    repeating-radial-gradient(
+      circle at 20% 30%,
+      transparent 0,
+      rgba(220, 200, 180, 0.015) 1px,
+      transparent 2px
+    ),
+    repeating-radial-gradient(
+      circle at 80% 70%,
+      transparent 0,
+      rgba(210, 190, 170, 0.015) 1px,
+      transparent 2px
+    ),
     radial-gradient(
       circle at 32% 38%,
-      rgba(255, 255, 255, 0.5),
-      transparent 40%
+      rgba(255, 255, 255, 0.6),
+      transparent 45%
     ),
     radial-gradient(
       circle at 68% 62%,
-      rgba(255, 255, 255, 0.4),
-      transparent 45%
-    );
-  background-blend-mode: normal;
-  z-index: -3;
+      rgba(255, 255, 255, 0.5),
+      transparent 50%
+    ),
+    var(--gradient);
+  background-blend-mode: normal; */
 }
 
 .blob {
@@ -95,7 +132,7 @@ a {
 }
 
 .blob-three {
-  background: rgba(61, 90, 124, 0.45); /* stamp blue glow */
+  background: rgba(230, 180, 140, 0.4); /* warm peachy glow */
   top: 35%;
   left: 48%;
 }
@@ -113,12 +150,12 @@ a {
   margin: 0 auto;
   padding: 14px 28px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 250, 240, 0.45);
   box-shadow: 0 8px 32px rgba(42, 24, 16, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(240, 232, 220, 0.6);
-  backdrop-filter: blur(24px) saturate(1.4);
-  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(240, 220, 200, 0.3);
+  backdrop-filter: blur(32px) saturate(1.6);
+  -webkit-backdrop-filter: blur(32px) saturate(1.6);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -137,7 +174,7 @@ a {
   width: 36px;
   height: 36px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #d6755b 0%, #f2a97e 50%, #8a6ab8 100%);
+  background: linear-gradient(135deg, #f5e6d3 0%, #e8a87c 50%, #d6755b 100%);
   display: grid;
   place-items: center;
   color: #3a1f1a;
@@ -183,14 +220,20 @@ main {
 .hero {
   max-width: 1200px;
   margin: 0 auto 96px;
-  min-height: calc(100vh - 160px);
-  padding-top: 80px;
-  padding-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-content {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
+  width: 100%;
 }
 
 .eyebrow {
@@ -264,10 +307,11 @@ h2 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 18px;
-  margin-top: 36px;
+  margin-top: 80px;
   max-width: 960px;
   margin-left: auto;
   margin-right: auto;
+  width: 100%;
 }
 
 .panel {
@@ -389,7 +433,7 @@ h2 {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: rgba(44, 127, 109, 0.1);
+  background: rgba(232, 168, 124, 0.15);
   display: grid;
   place-items: center;
   font-size: 18px;
@@ -423,8 +467,8 @@ h2 {
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #2c7f6d, #f18f01);
-  color: #fffaf2;
+  background: linear-gradient(135deg, #e8a87c, #f18f01);
+  color: #3a1f1a;
   display: grid;
   place-items: center;
   font-weight: 800;
@@ -473,10 +517,10 @@ h2 {
 .cta-card {
   background: linear-gradient(
     135deg,
-    rgba(44, 127, 109, 0.15),
+    rgba(232, 168, 124, 0.15),
     rgba(241, 143, 1, 0.18)
   );
-  border: 1px solid rgba(44, 127, 109, 0.3);
+  border: 1px solid rgba(232, 168, 124, 0.3);
   border-radius: 22px;
   padding: 24px;
   box-shadow: var(--shadow);
@@ -531,6 +575,11 @@ h2 {
 
   .hero-actions {
     flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero-content {
+    min-height: 80vh;
   }
 
   main {

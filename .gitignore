@@ -137,3 +137,7 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Large static assets
+frontend/public/paper*.jpg
+frontend/public/paper*.jpeg

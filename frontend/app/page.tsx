@@ -184,20 +184,23 @@ export default function Page() {
 
       <main>
         <section className="hero" id="top">
-          <div className="eyebrow">Paid gate for your Gmail</div>
-          <h1>Charge strangers to email your real inbox.</h1>
-          <p className="lede">
-            Sinmail adds a small “stamp” on cold emails into Gmail. Trusted
-            people and domains skip the paywall; everyone else pays before their
-            message is delivered, with receipts and labels for every send.
-          </p>
-          <div className="hero-actions">
-            <a className="button primary" href="#cta">
-              Start free
-            </a>
-            <a className="button ghost" href="#flow">
-              See the flow
-            </a>
+          <div className="hero-content">
+            <div className="eyebrow">Paid gate for your Gmail</div>
+            <h1>Charge strangers to email your real inbox.</h1>
+            <p className="lede">
+              Sinmail adds a small &quot;stamp&quot; on cold emails into Gmail.
+              Trusted people and domains skip the paywall; everyone else pays
+              before their message is delivered, with receipts and labels for
+              every send.
+            </p>
+            <div className="hero-actions">
+              <a className="button primary" href="#cta">
+                Start free
+              </a>
+              <a className="button ghost" href="#flow">
+                See the flow
+              </a>
+            </div>
           </div>
 
           <div className="hero-panels">
