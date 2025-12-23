@@ -1,26 +1,97 @@
 # Sinmail Backend
-API, webhooks, and worker layer for paid Gmail contact.
 
-## Proposed stack
-- Node.js + TypeScript with Fastify (HTTP) and BullMQ/Redis (queue) for delivery worker.
-- PostgreSQL via Prisma (schema for recipients, allowlist, messages, payment_intents, delivery_attempts, audit_logs).
-- 402x/Coinbase for payments; Gmail API for delivery + label management.
+> **Note**: The backend is now implemented as Next.js API routes in the `frontend/` directory for unified deployment.
 
-## MVP scope (mirrors root README)
-- Authenticated recipient API: connect/disconnect Gmail OAuth, set default price/currency, manage allowlist, fetch public link/config.
-- Public sender API: preflight allowlist check, create/confirm payment intent, submit message with idempotency key.
-- Webhooks: payment succeeded/failed → update intent/message, enqueue delivery.
-- Delivery worker: pick paid or allowlisted messages → insert into Gmail with `INBOX` + `Sinmail` label → store gmail_message_id + receipt URL → retry safely.
-- Reliability: idempotent handlers, signature verification, rate limits, DLQ/alerts for repeated failures.
+## Implementation Status
 
-## Local bootstrap (future)
-1) `npm init -y` (or pnpm) inside `backend/`.
-2) Add deps: `fastify`, `@fastify/cors`, `bullmq`, `ioredis`, `prisma`, `@prisma/client`, `zod`, `dotenv`.
-3) Add scripts: `dev` (ts-node-dev), `build`, `start`, `prisma migrate`.
-4) Create `src/` with modules for auth, allowlist, payments (402x), messages, webhooks, delivery worker.
-5) Set env: `DATABASE_URL`, `REDIS_URL`, `GMAIL_CLIENT_ID/SECRET`, `GMAIL_REDIRECT_URI`, `SESSION_SECRET`, `PAYMENT_SIGNING_SECRET`.
+The x402 payment backend has been implemented in `frontend/app/api/` with the following endpoints:
 
-## Notes
-- Keep Gmail scopes minimal (`https://www.googleapis.com/auth/gmail.insert` + labels); rotate/revoke tokens on disconnect.
-- Use Prisma migrations checked into repo; run in CI before app start.
-- All endpoints and webhooks must be idempotent; use provider refs and message ids for dedupe.
+### API Endpoints
+
+| Endpoint                           | Method           | Description                        |
+| ---------------------------------- | ---------------- | ---------------------------------- |
+| `/api/preflight`                   | POST             | Check allowlist status + get price |
+| `/api/messages`                    | POST             | Submit message (x402 protected)    |
+| `/api/recipients`                  | GET/POST         | List/create recipients             |
+| `/api/recipients/[slug]`           | GET/PATCH/DELETE | Recipient CRUD                     |
+| `/api/recipients/[slug]/allowlist` | GET/POST/DELETE  | Manage allowlist                   |
+| `/api/x402/session-token`          | POST             | x402 onramp session                |
+
+### Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Payments**: x402-next, @coinbase/x402
+- **Database**: PostgreSQL + Prisma
+- **Validation**: Zod
+
+### Quick Start
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your DATABASE_URL and PLATFORM_WALLET_ADDRESS
+
+# Generate Prisma client
+npm run db:generate
+
+# Push schema to database (development)
+npm run db:push
+
+# Seed sample data
+npm run db:seed
+
+# Start development server
+npm run dev
+```
+
+### Environment Variables
+
+```bash
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/sinmail"
+
+# x402 / Coinbase
+PLATFORM_WALLET_ADDRESS="0x..."  # Your Ethereum address to receive payments
+NETWORK="base-sepolia"           # or "base" for mainnet
+CDP_CLIENT_KEY=""                # Optional, for Coinbase onramp
+```
+
+### x402 Payment Flow
+
+1. Sender calls `POST /api/preflight` to check if allowlisted
+2. If not allowlisted, sender calls `POST /api/messages` without payment
+3. Server returns 402 with payment requirements
+4. Sender signs EIP-3009 authorization with their wallet
+5. Sender retries `POST /api/messages` with `X-PAYMENT` header
+6. Server verifies with Coinbase facilitator
+7. Payment settles on-chain (Base network)
+8. Message queued for Gmail delivery
+
+### Files Structure
+
+```
+frontend/
+├── app/api/              # API routes
+├── lib/
+│   ├── db/prisma.ts      # Database client
+│   ├── schemas/          # Zod validation schemas
+│   ├── x402/             # Payment utilities
+│   └── delivery/         # Gmail delivery (stubbed)
+├── middleware.ts         # x402 middleware
+└── prisma/
+    ├── schema.prisma     # Database models
+    └── seed.ts           # Sample data
+```
+
+## Future Work
+
+- [ ] Gmail OAuth integration for delivery
+- [ ] BullMQ queue for async delivery
+- [ ] Recipient dashboard authentication
+- [ ] Payment analytics
+- [ ] Rate limiting and abuse prevention
