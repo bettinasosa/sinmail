@@ -7,7 +7,7 @@ const heroRecipientItems = [
   { label: "Set default price", tag: "$ stamp", tone: "accent" },
   { label: "Allowlist people & domains", tag: "Free pass", tone: "soft" },
   { label: "Share your Sinmail link", tag: "Public", tone: "accent" }
-]
+] satisfies { label: string; tag: string; tone: Tone }[]
 
 const heroSenderItems = [
   { label: "Open link, write subject & body", tag: "No signup", tone: "soft" },
@@ -22,7 +22,7 @@ const heroSenderItems = [
     tag: "Under 60s",
     tone: "success"
   }
-]
+] satisfies { label: string; tag: string; tone: Tone }[]
 
 const featureCards = [
   {
@@ -166,28 +166,30 @@ export default function Page() {
       <div ref={blobThree} className="blob blob-three" />
 
       <header className="nav">
-        <div className="logo">
-          <div className="mark">✉</div>
-          <div className="wordmark">Sinmail</div>
+        <div className="nav-shell">
+          <div className="logo">
+            <div className="mark">✉</div>
+            <div className="wordmark">Sinmail</div>
+          </div>
+          <nav className="nav-links">
+            <a href="#product">Product</a>
+            <a href="#flow">How it works</a>
+            <a href="#features">Features</a>
+            <a href="#cta" className="pill">
+              Get started
+            </a>
+          </nav>
         </div>
-        <nav className="nav-links">
-          <a href="#product">Product</a>
-          <a href="#flow">How it works</a>
-          <a href="#features">Features</a>
-          <a href="#cta" className="pill">
-            Get started
-          </a>
-        </nav>
       </header>
 
       <main>
         <section className="hero" id="top">
-          <div className="eyebrow">Paid contact gate for Gmail</div>
-          <h1>A modern stamp for your inbox.</h1>
+          <div className="eyebrow">Paid gate for your Gmail</div>
+          <h1>Charge strangers to email your real inbox.</h1>
           <p className="lede">
-            Just like postage, strangers pay a small stamp to reach you. Connect
-            Gmail, set your price, and let trusted senders through for free —
-            every message lands with a Sinmail label and a receipt trail.
+            Sinmail adds a small “stamp” on cold emails into Gmail. Trusted
+            people and domains skip the paywall; everyone else pays before their
+            message is delivered, with receipts and labels for every send.
           </p>
           <div className="hero-actions">
             <a className="button primary" href="#cta">
