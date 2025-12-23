@@ -1,6 +1,10 @@
 # Sinmail
 Paid contact gateway for Gmail. Unknown senders pay to reach you; allowlisted senders go through for free. Messages arrive in Gmail with a `Sinmail` label and a payment receipt link.
 
+## Repo structure
+- `frontend/` — Next.js (app router) landing site and future dashboard. Run with `cd frontend && npm install && npm run dev`.
+- `backend/` — API, webhooks, and delivery worker (scaffold/plan in `backend/README.md`).
+
 ## Product overview
 - Recipient connects Gmail, sets a default price for unknown senders, and maintains an allowlist (emails + domains).
 - Recipient gets a public Sinmail link and embeddable form for inbound messages.
