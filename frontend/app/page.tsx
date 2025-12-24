@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
+import { GlassCard } from "@/components/ui/GlassCard"
 
 const heroRecipientItems = [
   { label: "Connect Gmail via OAuth", tag: "1 min", tone: "success" },
@@ -235,13 +236,13 @@ export default function Page() {
           </div>
           <div className="feature-grid">
             {featureCards.map(card => (
-              <div className="card" key={card.title}>
+              <GlassCard className="card" key={card.title}>
                 <div className="card-icon" aria-hidden>
                   {card.icon}
                 </div>
                 <h3>{card.title}</h3>
                 <p>{card.body}</p>
-              </div>
+              </GlassCard>
             ))}
           </div>
         </section>
@@ -253,13 +254,13 @@ export default function Page() {
           </div>
           <div className="steps">
             {steps.map((step, index) => (
-              <div className="step" key={step.title}>
+              <GlassCard className="step" key={step.title}>
                 <div className="step-number">{index + 1}</div>
                 <div className="step-body">
                   <h3>{step.title}</h3>
                   <p>{step.body}</p>
                 </div>
-              </div>
+              </GlassCard>
             ))}
           </div>
         </section>
@@ -271,10 +272,10 @@ export default function Page() {
           </div>
           <div className="pillars">
             {pillars.map(pillar => (
-              <div className="pillar" key={pillar.title}>
+              <GlassCard className="pillar" key={pillar.title}>
                 <h3>{pillar.title}</h3>
                 <p>{pillar.body}</p>
-              </div>
+              </GlassCard>
             ))}
           </div>
         </section>
