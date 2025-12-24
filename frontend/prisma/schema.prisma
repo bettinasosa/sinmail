@@ -1,0 +1,161 @@
+// Sinmail Database Schema
+// Paid contact gateway for Gmail with x402 payments
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Gmail-connected user who receives paid messages
+model Recipient {
+  id              String   @id @default(cuid())
+  slug            String   @unique // Public URL slug (e.g., "johndoe")
+  email           String   @unique // Gmail account email
+  walletAddress   String   // Ethereum address to receive USDC payments
+  defaultPriceUsd String   @default("0.10") // Price in USD for unknown senders
+  
+  // Gmail OAuth tokens (encrypted in production)
+  gmailRefreshToken String?
+  gmailLabelId      String? // Cached Sinmail label ID
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  allowlistEntries AllowlistEntry[]
+  messages         Message[]
+
+  @@index([slug])
+  @@index([email])
+}
+
+// Email or domain that bypasses payment for a recipient
+model AllowlistEntry {
+  id          String   @id @default(cuid())
+  recipientId String
+  type        AllowlistType // EMAIL or DOMAIN
+  value       String   // email@example.com or example.com
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  recipient Recipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@unique([recipientId, type, value])
+  @@index([recipientId])
+  @@index([value])
+}
+
+enum AllowlistType {
+  EMAIL
+  DOMAIN
+}
+
+// Message submitted by a sender to a recipient
+model Message {
+  id          String        @id @default(cuid())
+  recipientId String
+  
+  // Message content
+  senderEmail String?       // Optional sender email
+  subject     String
+  body        String
+  
+  // Status tracking
+  status      MessageStatus @default(PENDING)
+  
+  // Gmail delivery info
+  gmailMessageId String?    // Gmail's message ID after delivery
+  receiptUrl     String?    // URL to view payment receipt
+  
+  // Idempotency
+  idempotencyKey String?    @unique
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deliveredAt DateTime?
+  
+  // Relations
+  recipient Recipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  payment   Payment?
+  deliveryAttempts DeliveryAttempt[]
+
+  @@index([recipientId])
+  @@index([status])
+  @@index([idempotencyKey])
+}
+
+enum MessageStatus {
+  PENDING     // Awaiting payment or delivery
+  PAID        // Payment confirmed, awaiting delivery
+  DELIVERED   // Successfully delivered to Gmail
+  FAILED      // Delivery failed after retries
+  FREE        // Allowlisted sender, no payment required
+}
+
+// x402 payment record
+model Payment {
+  id        String        @id @default(cuid())
+  messageId String        @unique
+  
+  // Payment details
+  amountUsd     String    // Amount in USD
+  amountAtomic  String    // Amount in atomic units (USDC has 6 decimals)
+  network       String    // e.g., "base", "base-sepolia"
+  asset         String    // Token contract address
+  
+  // x402 specific
+  payerAddress  String    // Payer's wallet address
+  payToAddress  String    // Recipient's wallet address
+  
+  // Settlement
+  status        PaymentStatus @default(PENDING)
+  transactionHash String?  // On-chain transaction hash after settlement
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  settledAt DateTime?
+  
+  // Relations
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@index([payerAddress])
+  @@index([status])
+}
+
+enum PaymentStatus {
+  PENDING   // Payment verified, awaiting settlement
+  SETTLED   // Payment settled on-chain
+  FAILED    // Settlement failed
+}
+
+// Delivery attempt log for debugging and retries
+model DeliveryAttempt {
+  id        String   @id @default(cuid())
+  messageId String
+  
+  status    DeliveryAttemptStatus
+  error     String?  // Error message if failed
+  
+  attemptedAt DateTime @default(now())
+  
+  // Relations
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+}
+
+enum DeliveryAttemptStatus {
+  SUCCESS
+  FAILED
+  RETRYING
+}
